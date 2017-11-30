@@ -1,0 +1,21 @@
+#!/usr/bin/python
+#coding=utf-8 
+import hmac, base64, struct, hashlib, time
+import random
+import time
+
+def Authenticator_token2c(token):
+    input = int(time.time())//30
+    key = base64.b32decode(token)
+    msg = struct.pack(">Q", input)
+    code = hmac.new(key, msg, hashlib.sha1).digest()
+    o = ord(code[19]) & 15
+    code = str((struct.unpack(">I", code[o:o+4])[0] & 0x7fffffff) % 1000000)
+    while (len(code) < 6):
+        code = '0' + code
+    return code
+
+token = 'G34YBWBKU***5DYM'
+while (1):
+    print Authenticator_token2c(token)
+    time.sleep(30)
